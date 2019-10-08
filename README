@@ -1,0 +1,6 @@
+module-keepalive
+================
+
+Keepalive module is MCE (https://github.com/nemomobile/mce) specific module
+tracking sink/source activity and keeping a WAKELOCK when there are active
+streams.
