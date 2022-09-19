@@ -4,7 +4,7 @@
 
 Name:       pulseaudio-module-keepalive
 Summary:    PulseAudio keepalive module
-Version:    1.0.1
+Version:    1.1.0
 Release:    1
 License:    LGPLv2+
 URL:        https://github.com/sailfishos/pulseaudio-module-keepalive
