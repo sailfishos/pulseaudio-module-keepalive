@@ -6,14 +6,12 @@ Name:       pulseaudio-module-keepalive
 Summary:    PulseAudio keepalive module
 Version:    1.0.1
 Release:    1
-Group:      Multimedia/PulseAudio
 License:    LGPLv2+
-URL:        https://git.sailfishos.org/mer-core/pulseaudio-module-keepalive
+URL:        https://github.com/sailfishos/pulseaudio-module-keepalive
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   pulseaudio >= %{pulseversion}
-BuildRequires:  automake
-BuildRequires:  libtool
 BuildRequires:  libtool-ltdl-devel
+BuildRequires:  meson
 BuildRequires:  pkgconfig(pulsecore) >= %{pulsemajorminor}
 BuildRequires:  pkgconfig(dbus-1)
 
@@ -21,16 +19,15 @@ BuildRequires:  pkgconfig(dbus-1)
 PulseAudio keepalive module.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 echo "%{moduleversion}" > .tarball-version
-%reconfigure --disable-static
-make %{?jobs:-j%jobs}
+%meson
+%meson_build
 
 %install
-rm -rf %{buildroot}
-%make_install
+%meson_install
 
 %files
 %defattr(-,root,root,-)
