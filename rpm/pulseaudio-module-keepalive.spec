@@ -30,6 +30,5 @@ echo "%{moduleversion}" > .tarball-version
 %meson_install
 
 %files
-%defattr(-,root,root,-)
-%{_libdir}/pulse-%{pulsemajorminor}/modules/module-keepalive.so
+%{_libdir}/pulse-*/modules/module-keepalive.so
 %license COPYING
