@@ -40,15 +40,10 @@
 #include <pulsecore/dbus-util.h>
 #include <pulsecore/atomic.h>
 
+#include <mce/dbus-names.h>
 #include "keepalive.h"
 
 #define MCE_BUS (DBUS_BUS_SYSTEM)
-#define MCE_DBUS_NAME                   "com.nokia.mce"
-#define MCE_DBUS_PATH                   "/com/nokia/mce/request"
-#define MCE_DBUS_IFACE                  "com.nokia.mce.request"
-#define MCE_DBUS_KEEPALIVE_PERIOD_REQ   "req_cpu_keepalive_period"
-#define MCE_DBUS_KEEPALIVE_START_REQ    "req_cpu_keepalive_start"
-#define MCE_DBUS_KEEPALIVE_STOP_REQ     "req_cpu_keepalive_stop"
 
 struct pa_module_keepalive {
     pa_core *core;
@@ -93,10 +88,10 @@ static void send_dbus_signal(pa_dbus_connection *dbus) {
 
     /* pa_log_debug("Send keepalive heartbeat."); */
 
-    pa_assert_se((msg = dbus_message_new_method_call(MCE_DBUS_NAME,
-                                                     MCE_DBUS_PATH,
-                                                     MCE_DBUS_IFACE,
-                                                     MCE_DBUS_KEEPALIVE_START_REQ)));
+    pa_assert_se((msg = dbus_message_new_method_call(MCE_SERVICE,
+                                                     MCE_REQUEST_PATH,
+                                                     MCE_REQUEST_IF,
+                                                     MCE_CPU_KEEPALIVE_START_REQ)));
 
     dbus_connection_send(pa_dbus_connection_get(dbus), msg, NULL);
     dbus_message_unref(msg);
@@ -138,7 +133,7 @@ static void pending_req_reply_cb(DBusPendingCall *pending, void *userdata) {
     pa_assert_se(msg = dbus_pending_call_steal_reply(pending));
 
     if (dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_ERROR) {
-        pa_log("Failed to get %s", MCE_DBUS_KEEPALIVE_PERIOD_REQ);
+        pa_log("Failed to get %s", MCE_CPU_KEEPALIVE_PERIOD_REQ);
         goto finish;
     }
 
@@ -177,10 +172,10 @@ void pa_module_keepalive_start(pa_module_keepalive *k) {
     /* Send first keepalive heartbeat immediately. */
     send_dbus_signal(k->dbus_connection);
 
-    pa_assert_se((msg = dbus_message_new_method_call(MCE_DBUS_NAME,
-                                                     MCE_DBUS_PATH,
-                                                     MCE_DBUS_IFACE,
-                                                     MCE_DBUS_KEEPALIVE_PERIOD_REQ)));
+    pa_assert_se((msg = dbus_message_new_method_call(MCE_SERVICE,
+                                                     MCE_REQUEST_PATH,
+                                                     MCE_REQUEST_IF,
+                                                     MCE_CPU_KEEPALIVE_PERIOD_REQ)));
 
     dbus_connection_send_with_reply(pa_dbus_connection_get(k->dbus_connection), msg, &k->pending, -1);
     dbus_message_unref(msg);
@@ -215,10 +210,10 @@ void pa_module_keepalive_stop(pa_module_keepalive *k) {
         k->timer_event = NULL;
     }
 
-    pa_assert_se((msg = dbus_message_new_method_call(MCE_DBUS_NAME,
-                                                     MCE_DBUS_PATH,
-                                                     MCE_DBUS_IFACE,
-                                                     MCE_DBUS_KEEPALIVE_STOP_REQ)));
+    pa_assert_se((msg = dbus_message_new_method_call(MCE_SERVICE,
+                                                     MCE_REQUEST_PATH,
+                                                     MCE_REQUEST_IF,
+                                                     MCE_CPU_KEEPALIVE_STOP_REQ)));
 
     dbus_connection_send(pa_dbus_connection_get(k->dbus_connection), msg, NULL);
     dbus_message_unref(msg);
