@@ -14,6 +14,7 @@ BuildRequires:  libtool-ltdl-devel
 BuildRequires:  meson
 BuildRequires:  pkgconfig(pulsecore) >= %{pulsemajorminor}
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(mce)
 
 %description
 PulseAudio keepalive module.

@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2013-2019 Jolla Ltd.
+ * Copyright (C) 2013-2026 Jolla Mobile Ltd.
  *
- * Contact: Juho Hämäläinen <juho.hamalainen@jolla.com>
+ * Contact: Enni Hämäläinen <enni.hamalainen@jolla.com>
  *
  * These PulseAudio Modules are free software; you can redistribute
  * it and/or modify it under the terms of the GNU Lesser General Public
@@ -45,16 +45,10 @@
 
 #include "keepalive.h"
 
-PA_MODULE_AUTHOR("Juho Hämäläinen");
+PA_MODULE_AUTHOR("Enni Hämäläinen");
 PA_MODULE_DESCRIPTION("Keepalive. Send cpu wakeup heartbeat while streams are active.");
 PA_MODULE_VERSION(PACKAGE_VERSION);
-PA_MODULE_USAGE(
-        "-"
-);
-
-static const char* const valid_modargs[] = {
-    NULL,
-};
+PA_MODULE_USAGE("");
 
 struct userdata {
     pa_core *core;
@@ -76,20 +70,19 @@ static void start(struct userdata *u) {
 }
 
 static void stop(struct userdata *u) {
-    void *state = NULL;
+    uint32_t idx;
     pa_sink *sink;
     pa_source *source;
 
     if (!u->active)
         return;
 
-    while ((sink = pa_idxset_iterate(u->core->sinks, &state, NULL))) {
+    PA_IDXSET_FOREACH(sink, u->core->sinks, idx) {
         if (sink->state != PA_SINK_SUSPENDED)
             return;
     }
 
-    state = NULL;
-    while ((source = pa_idxset_iterate(u->core->sources, &state, NULL))) {
+    PA_IDXSET_FOREACH(source, u->core->sources, idx) {
         if (source->monitor_of)
             continue;
         if (source->state != PA_SOURCE_SUSPENDED)
@@ -136,7 +129,6 @@ static pa_hook_result_t device_state_changed_hook_cb(pa_core *c, pa_object *o, s
 
     return PA_HOOK_OK;
 }
-
 
 int pa__init(pa_module *m) {
     uint32_t idx = 0;
